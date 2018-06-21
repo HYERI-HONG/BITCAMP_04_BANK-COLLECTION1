@@ -1,12 +1,11 @@
-
 package controller;
 
 import javax.swing.JOptionPane;
 import domain.*;
-import service.AccountService;
-import serviceImpl.AccountServiceImpl;
+import service.*;
+import serviceImpl.*;
 
-enum AccountButt1 {
+enum AccountButt2 {
 	EXIT, ACCOUNT, 
 	MINUS_ACCOUNT, 
 	LIST, 
@@ -16,24 +15,24 @@ enum AccountButt1 {
 	CHANGE_PASS, 
 	DELETE_ACCOUNT
 }
-public class AccountController {
+public class AccountController2 {
 
 	public static void main(String[] args) {
-		AccountButt1[] buttons = { 
-				AccountButt1.EXIT, 
-				AccountButt1.ACCOUNT, 
-				AccountButt1.MINUS_ACCOUNT,
-				AccountButt1.LIST, 
-				AccountButt1.FIND_BY_ID,
-				AccountButt1.FIND_BY_NAME, 
-				AccountButt1.CHANGE_PASS,
-				AccountButt1.DELETE_ACCOUNT
+		AccountButt2[] buttons = { 
+				AccountButt2.EXIT, 
+				AccountButt2.ACCOUNT, 
+				AccountButt2.MINUS_ACCOUNT,
+				AccountButt2.LIST, 
+				AccountButt2.FIND_BY_ID,
+				AccountButt2.FIND_BY_NAME, 
+				AccountButt2.CHANGE_PASS,
+				AccountButt2.DELETE_ACCOUNT
 		};
 		AccountBean account;
-		AccountService service = new AccountServiceImpl();
+		AccountService2 service = new AccountServiceImpl2();
 		while (true) {
-			AccountButt1 select = (AccountButt1) JOptionPane.showInputDialog(null, // frame
-					"계좌 Map 버전", // frame title
+			AccountButt2 select = (AccountButt2) JOptionPane.showInputDialog(null, // frame
+					"계좌 List 버전", // frame title
 					"기능을 선택하시오", // order
 					JOptionPane.QUESTION_MESSAGE, // type
 					null, // icon
@@ -58,26 +57,26 @@ public class AccountController {
 				service.createMinusAccount((MinusAccountBean) account);
 				break;
 			case LIST:
-				JOptionPane.showMessageDialog(null,service.map());
+				JOptionPane.showMessageDialog(null,service.list());
 				break;
 			case FIND_BY_ID:
 				account = new AccountBean();
 				account.setUid(JOptionPane.showInputDialog("아이디 : "));
-				JOptionPane.showMessageDialog(null,(service.findById(account).toString()));
+				JOptionPane.showMessageDialog(null,(service.search(account).toString()));
 				break;
 			case FIND_BY_NAME:
-				JOptionPane.showMessageDialog(null,service.findByName(JOptionPane.showInputDialog("이름 : ").toString()));
+				JOptionPane.showMessageDialog(null,service.search(JOptionPane.showInputDialog("이름 : ")));
 				break;
 			case CHANGE_PASS:
 				account = new AccountBean();
 				account.setUid(JOptionPane.showInputDialog("아이디 : "));
-				account.setPass(JOptionPane.showInputDialog("기존 비밀번호") + "/" + JOptionPane.showInputDialog("새 비밀번호"));
-				service.updatePassword(account);
+				account.setPass(JOptionPane.showInputDialog("새 비밀번호 : "));
+				service.update(account);
 				break;
 			case DELETE_ACCOUNT:
 				account = new AccountBean();
 				account.setUid(JOptionPane.showInputDialog("아이디 : "));
-				service.deleteAccount(account);
+				service.delete(account);
 				break;
 			}
 

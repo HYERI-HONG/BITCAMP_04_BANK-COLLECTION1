@@ -1,63 +1,69 @@
 package serviceImpl;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import domain.*;
 import service.*;
 
 public class MemberServiceImpl implements MemberService{
-	List<MemberBean> list;
+	Map<String,MemberBean> map;
 	
 	public MemberServiceImpl() {
-		list = new ArrayList<MemberBean>();
+		map = new HashMap<>();
 	}
 	@Override
 	public void createUser(UserBean user) {
 		user.setCreditRating("7등급");
-		//boolean flag = list.add(user);
-		System.out.println(list.add(user)? "등록 성공" :"등록실패");
+		map.put(user.getUid(),user);
+		
 	}
 
 	@Override
 	public void createStaff(StaffBean staff) {
 		staff.setAccessNum("1234");
-		System.out.println(list.add(staff)? "등록 성공" :"등록실패");
+		map.put(staff.getUid(),staff);
 	}
 
 	@Override
-	public List<MemberBean> list() {
-		return list;
+	public Map<String , MemberBean> map() {
+		return map;
 	}
 
 	@Override
-	public List<MemberBean> search(String param) {
+	public List<MemberBean> findByName(String name) {
 		List<MemberBean> temp = new ArrayList<>();
-		for(int i=0; i<list.size();i++){
-			if(param.equals(list.get(i).getName())) {
-					temp.add(list.get(i));
-			}
+		Set<MemberBean> set = new HashSet<>();
+		
+		for(Map.Entry<String, MemberBean> e : map.entrySet()) { //Map에서 value의 key값을 떼어내고, 
+																										//내부에 있는 것들을 차례차례 확인하는데,
+			if(name.equals(e.getValue().getName())) {   //이름을 비교해서 이름이 같은경우 
+				set.add(e.getValue());                                //해당 value를 set에 담는다
+			}	
+		}
+		Iterator<MemberBean> it = set.iterator();  //set에 들어있는 요소들을 막무가내로 뒤진다.
+		while(it.hasNext()) {    //아직 더 뒤질게 남아있다면, 남아있는게 없을때까지 계속
+				temp.add(it.next()); //temp list에 해당 값을 넣는다.
 		}
 		return temp;
 	}
 	@Override
-	public MemberBean search(MemberBean member) {
-		MemberBean dap = new MemberBean();
-		for(int i=0; i<list.size();i++){
-			if(member.getUid().equals(list.get(i).getUid())){
-					dap = list.get(i);
-					break;
-			}
-		}
-		return dap;
+	public MemberBean findById(MemberBean member) {
+		System.out.println("찾는 아이디에 해당하는 이름 :" + map.get(member.getUid()));
+		return map.get(member.getUid());
 	}
 	@Override
-	public void update(MemberBean member) {
-		list.get(list.indexOf(search(member))).setPass(member.getPass());
+	public void updatePassword(MemberBean member) {
+		String id = member.getUid();
+		String oldPass = member.getPass().split("/")[0];
+		String newPass = member.getPass().split("/")[1];
+		if(map.get(id)==null) {
+			System.out.println("일치하는 아이디 없음");
+		}else if (oldPass.equals(map.get(id).getPass()))
+			map.get(id).setPass(newPass);
 	}
 	@Override
-	public void delete(MemberBean member) {
-		list.remove(list.indexOf(search(member)));
-		//list.remove((search(member)));
+	public void deleteMember(MemberBean member) {
+		map.remove(member.getUid());
+		
 	}
 	
 }

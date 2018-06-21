@@ -1,69 +1,77 @@
 package serviceImpl;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import domain.*;
 import service.*;
 //날짜 구하기
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 public class AccountServiceImpl implements AccountService {
-List<AccountBean> list;
+	Map<String,AccountBean> map;
 	public AccountServiceImpl() {
-		list = new ArrayList<>();
+		map = new HashMap<>();
 	}
 	@Override
 	public void createAccount(AccountBean account) {
 			account.setCreateDate(createDate());
 			account.setAccountNum(createAccountNum());
-			list.add(account);
+			map.put(account.getUid(),account);
 	}
 	@Override
 	public void createMinusAccount(MinusAccountBean account) {
 			account.setCreateDate(createDate());
 			account.setAccountNum(createAccountNum());
-			list.add(account);
+			map.put(account.getUid(),account);
 	}
 	@Override
-	public List<AccountBean> list() {
-		return list;
+	public Map<String,AccountBean> map() {
+		return map;
 	}
 
 	@Override
-	public List<AccountBean> search(String param) {
-	List<AccountBean> temp = new ArrayList<>();
+	public List<AccountBean> findByName(String name) {
+		List<AccountBean> temp = new ArrayList<>();
+		Set<AccountBean> set = new HashSet<>();
 		
-	for(int i=0; i<list.size(); i++) {
-			if(param.equals(list.get(i).getName())) {
-				temp.add(list.get(i));
+		for(Map.Entry<String, AccountBean> e : map.entrySet()) {
+			if(name.equals(e.getValue().getName())) {
+				set.add(e.getValue());
 			}
+		}
+		Iterator <AccountBean> it = set.iterator();
+		while(it.hasNext()) {
+			temp.add(it.next());
 		}
 		return temp;
 	}
 
 	@Override
-	public AccountBean search(AccountBean account) {
+	public AccountBean findById(AccountBean account) {
 		AccountBean temp = new AccountBean();
-		for(int i =0; i<list.size(); i++) {
-			if(account.getUid().equals(list.get(i).getUid())) {
-				temp = list.get(i);
-				break;
-			}
-		}
+		temp = map.get(account.getUid());
 		return temp;
 	}
 	
 	@Override
-	public void update(AccountBean account) {	
-		list.get(list.indexOf(search(account))).setPass(account.getPass());
+	public void updatePassword(AccountBean account) {	
+		
+		String id = account.getUid();
+		String oldPass = account.getPass().split("/")[0];
+		String newPass = account.getPass().split("/")[0];
+		
+		if(map.get(id)==null) {
+			System.out.println("일치하는 아이디 없음");
+		}
+		else if(oldPass.equals(map.get(id).getPass())) {
+			map.get(id).setPass(newPass);
+		}
 	}
 	
 	@Override
-	public void delete(AccountBean account) {
-		list.remove(search(account));
+	public void deleteAccount(AccountBean account) {
+		map.remove(account.getUid());
 		
 	}
 	@Override
